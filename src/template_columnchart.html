@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>				
+		<meta charset="utf-8">
+		<title>D3 Column Chart Template</title>			
+		<script type="text/javascript" src="../lib/d3/d3.js"></script> 
+		<link href="../css/galatea.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+	
+		<p>Click here to amaze</p>
+		
+		<script type="text/javascript">
+			
+			var w = 1280;
+			var h = 300;
+			var motionTime = 2000;
+			var motionEase = d3.easeBack;
+			var motionDelay = 1000;
+			
+			var axisPadding = 30;
+			
+			var dataset = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13, 11, 12, 15, 20, 18, 17, 16, 18, 23, 25, 40];
+			
+			var xScale = d3.scaleBand()
+						   .domain(d3.range(dataset.length))
+						   .range([0, w])
+						   .paddingInner(0.1)
+						   .paddingOuter(0.75);
+						   
+			var yScale = d3.scaleLinear()
+						   .domain([0, d3.max(dataset)])
+						   .range([h - axisPadding, 0]);						   
+			
+			var xAxis = d3.axisBottom(xScale);
+			
+			var yAxis = d3.axisLeft(yScale)
+						  .ticks(5);
+			
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+			
+			svg.selectAll("rect")
+				.data(dataset)
+				.enter()
+				.append("rect")
+				.attr("x", function(d, i) { 
+					return xScale(i); 
+				})
+				.attr("y", function(d) { 
+					return yScale(d); 
+				})
+				.attr("width", xScale.bandwidth())
+				.attr("height", function(d) { 
+					return yScale(0) - yScale(d); 
+				})
+				.attr("fill", "#649FC8");			
+			
+			svg.selectAll("text")
+				.data(dataset)
+				.enter()
+				.append("text")
+				.text(function(d) { return d; })				
+				.attr("x", function(d ,i) { 
+					return xScale(i) + xScale.bandwidth() / 2; 
+				})
+				.attr("y", function(d) { 
+					return yScale(d) + 12; 
+				})
+				.attr("font-family", "helvetica")
+				.attr("font-size", "11px")
+				.attr("fill", "black")
+				.attr("text-anchor", "middle");	
+			
+			d3.select("p")
+			  .on("click", function() {
+				  
+				  dataset = [11, 12, 15, 20, 18, 17, 16, 18, 23, 25, 5, 10, 13, 19, 21, 25, 22, 18, 15, 13, 25];
+				  
+				  svg.selectAll("rect")
+				  	 .data(dataset)
+				  	 .transition()
+				  	 .delay(function(d, i) {
+				  		 return i / dataset.length * motionDelay;
+				  	 })
+				  	 .duration(motionTime)
+				  	 .ease(motionEase)
+				  	 .attr("y", function (d){ 
+				  		 return yScale(d); 
+				  	 })
+				  	 .attr("height", function(d) { 
+				  		 return yScale(0) - yScale(d);
+				  	 })
+				  	 
+				  svg.selectAll("text")
+					 .data(dataset)
+					 .transition()
+					 .delay(function(d, i) {
+				  		 return i / dataset.length * motionDelay;
+				  	 })
+				  	 .duration(motionTime)
+				  	 .ease(motionEase)
+					 .text(function(d) { return d; })				
+					 .attr("x", function(d ,i) { 
+						return xScale(i) + xScale.bandwidth() / 2; 
+					 })
+					 .attr("y", function(d) { 
+						return yScale(d) + 12; 
+					 })
+			  });
+			
+			svg.append("g")
+			   .attr("class", "axis")
+			   .attr("transform", "translate(0, " + (h - axisPadding) + ")")
+			   .call(xAxis);
+			
+			svg.append("g")
+			   .attr("class", "axis")
+			   .attr("transform", "translate(" + axisPadding + ", 0)")
+			   .call(yAxis);
+			
+			
+			
+		</script>
+	</body>
+</html>

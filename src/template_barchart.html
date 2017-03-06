@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>				
+		<meta charset="utf-8">
+		<title>D3 Bar Chart Template</title>			
+		<script type="text/javascript" src="../lib/d3/d3.js"></script> 
+		<link href="../css/galatea.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+	
+		<p>Click here to amaze</p>
+		
+		<script type="text/javascript">
+			
+			var w = 1280;
+			var h = 600;
+			var motionTime = 2000;
+			var motionEase = d3.easeBack;
+			var motionDelay = 1000;
+			
+			var axisPadding = 30;
+			
+			var dataset = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13, 11, 12, 15, 20, 18, 17, 16, 18, 23, 25, 40];
+			
+			var xScale = d3.scaleLinear()
+			   			   .domain([0, d3.max(dataset)])
+			   			   .range([0, w - axisPadding]);
+			
+			var yScale = d3.scaleBand()
+						   .domain(d3.range(dataset.length))
+						   .range([h, 0])
+						   .paddingInner(0.1)
+						   .paddingOuter(0.75);									   
+			
+			var xAxis = d3.axisBottom(xScale);
+			
+			var yAxis = d3.axisLeft(yScale);						  
+			
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+			
+			svg.selectAll("rect")
+				.data(dataset)
+				.enter()
+				.append("rect")
+				.attr("x", axisPadding)
+				.attr("y", function(d, i) { 
+					return yScale(i); 
+				})
+				.attr("width", function(d) {
+					return xScale(d);
+				})
+				.attr("height", yScale.bandwidth())
+				.attr("fill", "#649FC8");			
+			
+			svg.selectAll("text")
+				.data(dataset)
+				.enter()
+				.append("text")
+				.text(function(d) { return d; })				
+				.attr("y", function(d ,i) { 
+					return yScale(i) + yScale.bandwidth() / 1.5; 
+				})
+				.attr("x", function(d) { 
+					return xScale(d) + axisPadding / 1.5; 
+				})
+				.attr("font-family", "helvetica")
+				.attr("font-size", "11px")
+				.attr("fill", "black")
+				.attr("text-anchor", "middle");	
+			
+			d3.select("p")
+			  .on("click", function() {
+				  
+				  dataset = [11, 12, 15, 20, 18, 17, 16, 18, 23, 25, 5, 10, 13, 19, 21, 25, 22, 18, 15, 13, 25];
+				  
+				  svg.selectAll("rect")
+				  	 .data(dataset)
+				  	 .transition()
+				  	 .delay(function(d, i) {
+				  		 return i / dataset.length * motionDelay;
+				  	 })
+				  	 .duration(motionTime)
+				  	 .ease(motionEase)
+				  	 .attr("x", axisPadding)
+				  	 .attr("width", function(d) {
+						return xScale(d);
+					 })
+				  	 
+				  svg.selectAll("text")
+					 .data(dataset)
+					 .transition()
+					 .delay(function(d, i) {
+				  		 return i / dataset.length * motionDelay;
+				  	 })
+				  	 .duration(motionTime)
+				  	 .ease(motionEase)
+					 .text(function(d) { return d; })				
+					 .attr("y", function(d ,i) { 
+						 return yScale(i) + yScale.bandwidth() / 1.5; 
+					 })
+					.attr("x", function(d) { 
+						 return xScale(d) + axisPadding / 1.5; 
+					 })
+			  });
+			
+			svg.append("g")
+			   .attr("class", "axis")
+			   .attr("transform", "translate(" + axisPadding + ", " + (h - axisPadding / 1.5) + ")")
+			   .call(xAxis);
+			
+			svg.append("g")
+			   .attr("class", "axis")
+			   .attr("transform", "translate(" + axisPadding + ", 0)")
+			   .call(yAxis);			
+		</script>
+	</body>
+</html>
